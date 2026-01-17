@@ -7,8 +7,8 @@ class WC_Gateway_Gov_LO extends WC_Payment_Gateway {
         $this->id                 = 'gov_lo';
         $this->icon               = ''; 
         $this->has_fields         = true;
-        $this->method_title       = 'Malaysia Gov Letter Order';
-        $this->method_description = 'Benarkan pembayaran menggunakan Letter Order (LO) Kerajaan Malaysia dengan muat naik dokumen wajib.';
+        $this->method_title       = 'Malaysian Gov Letter Order';
+        $this->method_description = 'Allow payments using Malaysian Government Letter Order (LO) with mandatory document upload.';
 
         $this->init_form_fields();
         $this->init_settings();
@@ -16,7 +16,6 @@ class WC_Gateway_Gov_LO extends WC_Payment_Gateway {
         $this->title       = $this->get_option( 'title' );
         $this->description = $this->get_option( 'description' );
 
-        // Simpan setting admin
         add_action( 'woocommerce_update_options_payment_gateways_' . $this->id, array( $this, 'process_admin_options' ) );
     }
 
@@ -25,26 +24,25 @@ class WC_Gateway_Gov_LO extends WC_Payment_Gateway {
             'enabled' => array(
                 'title'   => 'Enable/Disable',
                 'type'    => 'checkbox',
-                'label'   => 'Aktifkan Pembayaran Gov LO',
+                'label'   => 'Enable Gov LO Payment',
                 'default' => 'yes'
             ),
             'title' => array(
-                'title'       => 'Tajuk',
+                'title'       => 'Title',
                 'type'        => 'text',
-                'description' => 'Tajuk yang dilihat oleh pengguna semasa checkout.',
-                'default'     => 'Pesanan Kerajaan (LO)',
+                'description' => 'This controls the title which the user sees during checkout.',
+                'default'     => 'Government Letter Order (LO)',
                 'desc_tip'    => true,
             ),
             'description' => array(
-                'title'       => 'Penerangan',
+                'title'       => 'Description',
                 'type'        => 'textarea',
-                'description' => 'Penerangan kaedah pembayaran.',
-                'default'     => 'Sila muat naik dokumen LO rasmi anda dalam format PDF.',
+                'description' => 'Payment method description that the customer will see on your checkout.',
+                'default'     => 'Please upload your official Letter Order (LO) document in PDF format.',
             )
         );
     }
 
-    // Paparan Field di Checkout (HTML)
     public function payment_fields() {
         if ( $this->description ) {
             echo wpautop( wp_kses_post( $this->description ) );
@@ -52,31 +50,30 @@ class WC_Gateway_Gov_LO extends WC_Payment_Gateway {
 
         echo '<fieldset id="wc-' . esc_attr( $this->id ) . '-cc-form" class="wc-credit-card-form wc-payment-form" style="background:transparent; border:0; padding:0;">';
 
-        // Input No LO
+        // LO Number Input
         woocommerce_form_field( 'gov_lo_number', array(
             'type'        => 'text',
             'class'       => array('form-row-wide'),
-            'label'       => 'Nombor LO (Wajib)',
+            'label'       => 'LO Number (Required)',
             'required'    => true,
-            'placeholder' => 'Contoh: KKM/2024/001'
+            'placeholder' => 'Example: KKM/2026/001'
         ));
 
-        // Input File Upload
+        // File Upload Input
         echo '<div class="form-row form-row-wide">
-                <label>Muat Naik Dokumen LO (PDF sahaja) <span class="required">*</span></label>
+                <label>Upload LO Document (PDF Only) <span class="required">*</span></label>
                 <input type="file" name="gov_lo_file" id="gov_lo_file" accept=".pdf" required />
-                <small style="display:block; color: #666; margin-top:5px;">Maksimum saiz fail bergantung pada server anda.</small>
+                <small style="display:block; color: #666; margin-top:5px;">Maximum file size depends on your server settings.</small>
               </div>';
 
         echo '</fieldset>';
     }
 
-    // Proses Pembayaran (Backend)
     public function process_payment( $order_id ) {
         $order = wc_get_order( $order_id );
 
-        // Tandakan sebagai On Hold
-        $order->update_status( 'on-hold', __( 'Menunggu pengesahan dokumen LO.', 'wc-gov-lo' ) );
+        // Mark as On Hold
+        $order->update_status( 'on-hold', __( 'Awaiting LO document verification.', 'wc-gov-lo' ) );
         wc_reduce_stock_levels( $order_id );
         WC()->cart->empty_cart();
 
