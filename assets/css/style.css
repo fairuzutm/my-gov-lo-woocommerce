@@ -1,0 +1,22 @@
+/* Style untuk Admin Dashboard Box */
+.gov-lo-admin-box .admin-notice-box {
+    background: #f0f6fc;
+    border-left: 4px solid #72aee6;
+    padding: 10px;
+    margin-bottom: 15px;
+}
+
+.gov-lo-admin-box input[readonly] {
+    background: #f9f9f9;
+    border: 1px solid #ddd;
+    color: #555;
+}
+
+/* Style untuk My Account Frontend */
+.gov-lo-my-account-box {
+    margin-top: 30px; 
+    margin-bottom: 30px; 
+    border: 1px solid #e5e5e5; 
+    padding: 20px; 
+    border-radius: 5px;
+}
